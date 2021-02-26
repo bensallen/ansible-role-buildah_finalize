@@ -1,0 +1,17 @@
+---
+# $ buildah pull $BASE_IMAGE
+# $ buildah from --name $CONT_NAME $BASE_IMAGE
+# $ printf "$CONT_NAME \
+#   ansible_connection=buildah \
+#   ansible_python_interpreter=/usr/bin/python3" >inventory-container
+# $ ansible-playbook -i inventory-container -c buildah ./recipe.yaml
+# $ buildah commit --cmd '/entrypoint.sh' $CONT_NAME my-fancy-image
+# $ buildah rm $(CONT_NAME)
+
+- block:
+  - name: Commit image
+    command: buildah commit "{{ buildah_working_name }}" "{{ buildah_target_name }}"
+  
+  - name: Cleanup working image
+    command: buildah rm "{{ buildah_working_name }}"
+  delegate_to: "{{ buildah_build_host }}"
