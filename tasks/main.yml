@@ -7,6 +7,8 @@
 # $ ansible-playbook -i inventory-container -c buildah ./recipe.yaml
 # $ buildah commit --cmd '/entrypoint.sh' $CONT_NAME my-fancy-image
 # $ buildah rm $(CONT_NAME)
+# $ podman container create --name=test1 my-fancy-image
+# $ podman export --output=test1_cont.tar test1
 
 - block:
   - name: Commit image
@@ -14,4 +16,12 @@
   
   - name: Cleanup working image
     command: buildah rm "{{ buildah_working_name }}"
+
+  - block:
+    - name: Create a temporary container with podman
+      command: podman container create "--name={{ buildah_working_name }}" "{{ buildah_target_name }}"
+
+    - name: Export container to tarfile with podman
+      command: podman container export "--output={{ buildah_export_via_podman_output_path }}" "{{ buildah_target_name }}"
+    when: buildah_export_via_podman|bool
   delegate_to: "{{ buildah_build_host }}"

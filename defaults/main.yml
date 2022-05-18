@@ -7,3 +7,6 @@ buildah_working_name: "{{ buildah_target_name }}-{{ansible_date_time.iso8601_bas
 
 buildah_build_host: localhost
 
+buildah_export_via_podman: true
+
+buildah_export_via_podman_output_path: "{{ buildah_target_name }}.tar"
